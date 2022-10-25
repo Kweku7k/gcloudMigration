@@ -1,11 +1,5 @@
-from concurrent.futures import thread
-from crypt import methods
-import re
 import secrets
 import os
-import datetime
-from tkinter.tix import Tree
-from urllib import response
 import urllib.request, urllib.parse
 import urllib
 from flask import Flask, render_template, redirect, flash, url_for, request, session, make_response
@@ -14,7 +8,6 @@ from flask_login import UserMixin, login_user, current_user, logout_user
 from flask_login import LoginManager
 from PIL import Image
 from flask_migrate import Migrate
-import json
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI']='postgres://jziidvhglkmwop:847579f0fc359140a5a832725e61db1c3754eb6523c12849558fbfd1bfa8a2cf@ec2-34-236-94-53.compute-1.amazonaws.com:5432/d11sblr8akns3e'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
@@ -424,6 +417,50 @@ def sendtelegram(params):
 @app.route('/test', methods=['POST','GET'])
 def test():
     return render_template('asdf.html')
+
+
+
+@app.route('/naloussd', methods=['GET', 'POST'])
+def naloussd():
+    print(request.json)
+    sessionId = request.json['SESSIONID']
+    # menu = request.json['USERDATA']
+    print(sessionId)
+    msisdn = request.json['MSISDN']
+    mobileNetwork = request.json['NETWORK']
+    extension = '148'
+    data = request.json['USERDATA']
+    print(data)
+
+    if len(data) == 8:
+        print("data")
+        print(data)
+        # make the request for the account. 
+        return makePayment(msisdn, data, extension, mobileNetwork)
+         
+        #  make payement
+    elif len(data) < 8:
+        print("data")
+        print(data)
+        return makePayment(msisdn, data, extension, mobileNetwork)
+
+    elif len(data) > 8: 
+        print("Has an extension")
+        extension = data.split("*")
+        print(extension)
+        print(extension[3])
+        extension = extension[3]
+
+        print(getNomineeByCode(extension))
+        MSG = getNomineeByCode(extension)
+        response = {
+            "USERID": "prestoGh",
+            "MSISDN":msisdn,
+            "MSG":MSG,
+            "MSGTYPE":True
+        }
+        resp = make_response(response) 
+        return resp
 
 # @app.route('/myitems')
 # def myitems():
