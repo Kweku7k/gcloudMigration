@@ -4,18 +4,21 @@ import re
 import secrets
 import os
 import datetime
+from tkinter.tix import Tree
+from urllib import response
 import urllib.request, urllib.parse
 import urllib
-from flask import Flask, render_template, redirect, flash, url_for, request, session
+from flask import Flask, render_template, redirect, flash, url_for, request, session, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, current_user, logout_user
 from flask_login import LoginManager
 from PIL import Image
 from flask_migrate import Migrate
+import json
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI']='postgres://jziidvhglkmwop:847579f0fc359140a5a832725e61db1c3754eb6523c12849558fbfd1bfa8a2cf@ec2-34-236-94-53.compute-1.amazonaws.com:5432/d11sblr8akns3e'
-# app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://hgikcuqfytwhhw:0665b5b321fccc2dbed4070c7c9451877b061d4fa9e3fc32b42220016d276222@ec2-44-195-132-31.compute-1.amazonaws.com:5432/d61i5rsnofs2q2'
+app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
+# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://hgikcuqfytwhhw:0665b5b321fccc2dbed4070c7c9451877b061d4fa9e3fc32b42220016d276222@ec2-44-195-132-31.compute-1.amazonaws.com:5432/d61i5rsnofs2q2'
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@eligibility.central.edu.gh:5432/talanku'
 
@@ -38,6 +41,19 @@ class Item(db.Model):
     vendor = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
 def __repr__(self): 
     return f"Item('{self.name}', '{self.category}', )"
+
+class Event(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(), nullable = False)
+    image =  db.Column (db.String(), default='default.jpg')
+    category = db.Column(db.String(), nullable=True)
+    organiser = db.Column(db.String(), nullable=True)
+    startDate = db.Column(db.String(), nullable=True)
+    organiser = db.Column(db.String(), nullable=True)
+    
+    def __repr__(self): 
+        return f"Item('{self.name}', '{self.category}', )"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -269,8 +285,7 @@ def index(itemId):
 def home():
     form = Search()
     session['cart'] = []
-    items = Item.query.order_by(Item.id.desc()).limit(20).all()
-    # items = Item.query.all().order_by()
+    events = Event.query.order_by(Event.id.desc()).limit(20).all()
     home = 'home'
     shoppingCart = session['cart']
     print(type(shoppingCart))
@@ -279,7 +294,7 @@ def home():
         searchquery = searchquery.lower()
         print(searchquery)
         return redirect(url_for('searchal', searchquery = searchquery)) 
-    return render_template('index.html', items = items, home=home, form=form, cart=shoppingCart)
+    return render_template('index.html', events = events, home=home, form=form, cart=shoppingCart)
 
 @app.route('/testing')
 def testing():
@@ -573,6 +588,94 @@ def verify():
 def users():
     users = User.query.all()
     return render_template("users.html", users = users)
+
+
+# Request Body
+@app.route('/orders', methods=['GET', 'POST'])
+
+# Function
+def orders():
+    # Query is initialized to a variable - orders
+    orders = Order.query.all()
+
+    # new array is initiales
+    allOrders = []
+
+    # Iterate through the list returned by the query
+    for order in orders:
+
+        # Converting to json
+        newResponse = {
+            "orderId":order.id,
+            "price":order.price,
+            "location":order.location,
+            "phone":order.phone
+        }
+        # After every iteration, we upload to the arra
+        allOrders.append(newResponse)
+
+    # We print all orders
+    print(allOrders)
+
+    # Make a response, this parses the data to a readable format
+    response = make_response(allOrders)
+    # Return the response. Which is recieved by the client.
+    return response
+
+@app.route('/neworder', methods=['GET', 'POST'])
+def neworder():
+    print(request.json["name"])
+    print(request.json["price"])
+    print(request.json["location"])
+    print(request.json["phone"])
+
+
+    # THis is how you create a new entry to your db.
+    newOrder = Order(name = request.json['name'], phone = request.json['phone'], price=request.json['price'], location = request.json['location'])
+    # You add to your session
+    db.session.add(newOrder)
+    # Commits the data to storage if all checks are passed.
+    db.session.commit()
+
+    newResponse = {
+        "orderId": newOrder.id,
+        "name":newOrder.name,
+        "phone":newOrder.phone,
+        "price":newOrder.price,
+        "location":newOrder.location
+    }
+
+    response = make_response(newResponse)
+    return response
+
+@app.route('/getorder/<int:id>', methods=['GET', 'POST'])
+def getorder(id):
+    order = Order.query.get_or_404(id)
+    print(order)
+    jsonOrder = {
+        "orderId":order.id,
+        "price":order.price,
+        "location":order.location,
+        "phone":order.phone,
+    }
+
+    response = make_response(jsonOrder)
+    return response
+
+@app.route('/deleteOrder/<int:id>', methods=['GET', 'POST', 'DELETE'])
+def deleteOrder(id):
+
+    try:
+        order = Order.query.get_or_404(id)
+        db.session.delete(order)
+        db.session.commit()
+        response = "Order Id: " + str(id) + " was deleted successfully!"
+
+    except:
+        response = "Order Id: " + str(id) + " was not deleted!!"
+   
+    return make_response(response)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
