@@ -449,7 +449,14 @@ def naloussd():
     elif len(data) < 8:
         print("data")
         print(data)
-        # return makePayment(msisdn, data, extension, mobileNetwork)
+        response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Please enter a name to assign the " + data + " tickets to.",
+                "MSGTYPE":True
+            }
+        resp = make_response(response) 
+        return resp
 
     elif len(data) > 8: 
         print("Has an extension")
@@ -461,7 +468,7 @@ def naloussd():
         response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event.",
+                "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event. \n Each tickets costs 1 cedi.",
                 "MSGTYPE":True
             }
         resp = make_response(response) 
