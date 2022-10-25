@@ -579,8 +579,14 @@ def ussdconfirm(id):
     json_content = {}
     response = make_response({"Response": "OK"})
     response.headers = {'Content-Type': 'application/json'}
-
-    # send_sms("0545977791", "It worked", "PrestoSol")
+    try:
+            print(request.form)
+            content = request.form  # ImmutableMultiDict(text, "")
+            text = list(content.keys())[0]  # '{"Source":{"ReportTime":"2022-...
+            json_content = json.loads(text)
+            print(json_content)
+    except:
+        print("request.form - didnt work")
 
     return response
 
@@ -729,8 +735,8 @@ def naloussd():
                 "MSGTYPE":False
             }
             makePayment(msisdn, customer.numberOfTickets, customer.name, mobileNetwork)
+            resp = make_response(response)
             return resp
-
         else:
             response = {
                 "USERID": "prestoGh",
@@ -738,6 +744,8 @@ def naloussd():
                 "MSG":"Oops, if you are seeing this, then Nana Kweku Really FuckUp on this USSD",
                 "MSGTYPE":False
             }
+            resp = make_response(response)
+            return resp
 
             
         # Type Of Ticket
