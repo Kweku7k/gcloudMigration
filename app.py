@@ -562,7 +562,7 @@ def makePayment(account, amount, candidateId, network):
     invoiceNo = content['InvoiceNo']
     newTransaction.ref = str(invoiceNo)
     db.session.commit()
-    
+
     print(r.status_code)
     print(r.headers)
     return r.content
@@ -571,6 +571,78 @@ def makePayment(account, amount, candidateId, network):
 @app.route('/test', methods=['POST','GET'])
 def test():
     return render_template('asdf.html')
+
+
+@app.route('/ussdconfirm/<string:id>', methods=['GET', 'POST'])
+def ussdconfirm(id):
+    print(request)
+    json_content = {}
+    response = make_response({"Response": "OK"})
+    response.headers = {'Content-Type': 'application/json'}
+
+    # send_sms("0545977791", "It worked", "PrestoSol")
+
+    return response
+
+
+# @app.route('/ussdconfirm/<string:id>', methods=['GET', 'POST'])
+# def ussdconfirm(id):
+#     print(request)
+#     json_content = {}
+#     response = make_response({"Response": "OK"})
+#     response.headers = {'Content-Type': 'application/json'}
+#     try:
+#             print(request.form)
+#             content = request.form  # ImmutableMultiDict(text, "")
+#             text = list(content.keys())[0]  # '{"Source":{"ReportTime":"2022-...
+#             json_content = json.loads(text)
+#             print(json_content)
+#     except:
+#         print("request.form - didnt work")
+    
+#     if test == True:
+#         print("THIS IS A TEST VALUE!!!!")
+#         status = 'PAID'
+#         transactionId = Transactions.query.get_or_404(id).ref
+        
+#     else:
+#         # votingAlert(json_content)
+#         status = json_content["Status"]
+#         transactionId = json_content["InvoiceNo"]
+        
+#     if status == 'PAID':
+#         transaction = Transactions.query.filter_by(ref = transactionId).first()
+#         # send_sms(" have" + str(transaction.ref) + " has been paid!")
+#         # print(transaction)
+        
+
+#         if transaction:
+#             if transaction.paid == False:
+#                 # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
+               
+#                 candidate.votes = int(updatedVotes)
+#                 newVote = Votes(candidateId = str(candidate.id), name = str(candidate.name), amount = str(transaction.amount), ref=str(transaction.id))
+#                 transaction.paid = True
+#                 db.session.add(newVote)
+#                 db.session.commit()
+#                 phoneNumber = "0"+ str(transaction.account[-9:])
+#                 print(phoneNumber)
+#                 votingChannel(transaction.amount + " votes have been bought for " + candidate.name + " from " + transaction.account)
+#                 # votingAlert("Vote id: " + newVote.id + " is successful " )
+#                 votingAlert("Successfully updated " + candidate.name + " votes to " + str(candidate.votes) + "\n Vote Id: " + str(newVote.id))
+#                 send_sms(phoneNumber, "Congratulations! You have successfully bought " + str(transaction.amount) + " vote(s) for " + str(candidate.name) + "transactionId: PRS" +id + "NLO"+str(transaction.ref)  , "TCA")
+#                 print(" --------------------------------------------------------------------- ")
+#                 # except:
+#                     # votingAlert("Attempt to update " + str(transaction.amount) + " votes for "+ candidate.name +" was unsuccessful.")
+#             else:
+#                 votingAlert("This transaction has already been recorded.")
+#         else:
+#             votingAlert("There is no transaction with that id" + str(id))
+#     else:
+#         print("Nalo Payment " + transactionId + "has failed, kpotor!")
+   
+#     return response
+
 
 
 def checkForSession(sessionId):
@@ -864,8 +936,8 @@ def sendmessage():
     flash (f'Account has been verified','success')
     return redirect('dashboard')
 
-def send_sms(api_key,phone,message,sender_id):
-    params = {"key":api_key,"to":phone,"msg":message,"sender_id":sender_id}
+def send_sms(phone,message,sender_id):
+    params = {"key":"aniXLCfDJ2S0F1joBHuM0FcmH","to":phone,"msg":message,"sender_id":sender_id}
     url = 'https://apps.mnotify.net/smsapi?'+ urllib.parse.urlencode(params)
     content = urllib.request.urlopen(url).read()
     print (content)
