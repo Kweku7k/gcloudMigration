@@ -463,8 +463,9 @@ def sendtelegram(params):
 
 
 @app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
-def makePayment(account, amount, candidateId, network):
-    print(account, str(amount), candidateId, str(network))
+def makePayment(account, amount, customerId, network):
+    test = True
+    print(account, str(amount), customerId, str(network))
 
     # PaymentThingyDontFuckingTouch!
     username = "Pr3t0_gen"
@@ -478,9 +479,9 @@ def makePayment(account, amount, candidateId, network):
     vodePayment = False
     # Okay,THankFuckingYou❤️!
 
-
+    # TODO :change candidate to customer!
     # try:
-    newTransaction = Transactions(candidate = candidateId, account=account, award="tca", amount = float(amount))
+    newTransaction = Transactions(candidate = customerId, account=account, award="tca", amount = float(amount))
     db.session.add(newTransaction)
     db.session.commit()
     print(newTransaction)
@@ -489,7 +490,7 @@ def makePayment(account, amount, candidateId, network):
     # votingAlert("Create transaction was unsuccessful")
 
     if test == True:
-        amount = 0.01
+        amount = 0.20
 
     if network == 'OT':
         payBy = 'VODAFONE'
@@ -534,10 +535,10 @@ def makePayment(account, amount, candidateId, network):
         "merchant_id": "NPS_000153",
         "secrete": usercred.hexdigest(), 
         "key": key, 
-        "order_id": str(candidateId)+"-"+str(newTransaction.amount)+"TCA-PRS",
-        "customerName": candidateId+"tca", 
+        "order_id": str(customerId)+"-"+str(newTransaction.amount)+"TCA-PRS",
+        "customerName": str(customerId)+"tca", 
         "amount": str(amount), 
-        "item_desc": "award: TCA - :"+candidateId , 
+        "item_desc": "TickedFor - :"+str(customerId) , 
         "customerNumber": str(phoneNumber), 
         "isussd":1,
         "newVodaPayment": vodePayment,
@@ -575,6 +576,7 @@ def test():
 
 @app.route('/ussdconfirm/<string:id>', methods=['GET', 'POST'])
 def ussdconfirm(id):
+    test = True
     print(request)
     json_content = {}
     response = make_response({"Response": "OK"})
@@ -587,6 +589,51 @@ def ussdconfirm(id):
             print(json_content)
     except:
         print("request.form - didnt work")
+
+    if test == True:
+        print("THIS IS A TEST VALUE!!!!")
+        status = 'PAID'
+        transactionId = Transactions.query.get_or_404(id).ref
+        
+    else:
+        # votingAlert(json_content)
+        status = json_content["Status"]
+        transactionId = json_content["InvoiceNo"]
+        
+    if status == 'PAID':
+        transaction = Transactions.query.filter_by(ref = transactionId).first()
+        print(transaction)
+        customer = Customer.query.get_or_404(transaction.candidate)
+        # send_sms(" have" + str(transaction.ref) + " has been paid!")
+        # print(transaction)
+        
+
+        if transaction:
+            if transaction.paid == False:
+                # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
+               
+                customer.paid = True
+                transaction.paid = True
+                # TODO newTicket!
+                # db.session.add(newVote)
+                # db.session.commit()
+                phoneNumber = "0"+ str(transaction.account[-9:])
+                print(phoneNumber)
+                # votingChannel(transaction.amount + " votes have been bought for " + candidate.name + " from " + transaction.account)
+                # votingAlert("Vote id: " + newVote.id + " is successful " )
+                # votingAlert("Successfully updated " + candidate.name + " votes to " + str(candidate.votes) + "\n Vote Id: " + str(newVote.id))
+                send_sms(phoneNumber, "Hello " + str(customer.name) + "\n" + "You have succesfully purchased " + str(customer.numberOfTickets) + " ticket(s) for " + str(customer.event) + " Your ticket code is: PRSXA3258BVGFM", "PrestoSl")
+                print(" --------------------------------------------------------------------- ")
+                # except:
+                    # votingAlert("Attempt to update " + str(transaction.amount) + " votes for "+ candidate.name +" was unsuccessful.")
+            else:
+                print("This transaction has already been recorded.")
+        else:
+            print("There is no transaction with that id" + str(id))
+    else:
+        print("Nalo Payment " + transactionId + "has failed, kpotor!")
+   
+    return response
 
     return response
 
@@ -734,7 +781,7 @@ def naloussd():
                 "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
                 "MSGTYPE":False
             }
-            makePayment(msisdn, customer.numberOfTickets, customer.name, mobileNetwork)
+            makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
             resp = make_response(response)
             return resp
         else:
