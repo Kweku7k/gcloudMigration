@@ -436,7 +436,14 @@ def naloussd():
         print("data")
         print(data)
         # make the request for the account. 
-        return makePayment(msisdn, data, extension, mobileNetwork)
+        response = {
+            "USERID": "prestoGh",
+            "MSISDN":msisdn,
+            "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event.",
+            "MSGTYPE":True
+        }
+        resp = make_response(response) 
+        return resp
          
         #  make payement
     elif len(data) < 8:
