@@ -1,4 +1,7 @@
+from email.policy import default
 import secrets
+import hashlib
+import random
 import os
 import urllib.request, urllib.parse
 import urllib
@@ -8,6 +11,9 @@ from flask_login import UserMixin, login_user, current_user, logout_user
 from flask_login import LoginManager
 from PIL import Image
 from flask_migrate import Migrate
+from datetime import datetime
+import json
+import requests
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI']='postgres://jziidvhglkmwop:847579f0fc359140a5a832725e61db1c3754eb6523c12849558fbfd1bfa8a2cf@ec2-34-236-94-53.compute-1.amazonaws.com:5432/d11sblr8akns3e'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
@@ -20,6 +26,12 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
 app.config['SECRET_KEY'] = '5791628b21sb13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+proxies = {
+#   "http": os.environ['QUOTAGUARDSTATIC_URL']
+  "http": "http://6xg7ny82rmedub:vl88kl66mb8fqxoa01p0bovi1v5iv5@us-east-static-06.quotaguard.com:9293",
+}
+
 login_manager = LoginManager(app)
 
 class Item(db.Model):
@@ -47,6 +59,41 @@ class Event(db.Model):
     
     def __repr__(self): 
         return f"Item('{self.name}', '{self.category}', )"
+
+    
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sessionId = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(), nullable=True)
+    phoneNumber = db.Column(db.String(), nullable=True)
+    numberOfTickets = db.Column(db.String(), nullable = True)
+    typeOfTickets =  db.Column (db.String(), default='default.jpg')
+    paid = db.Column(db.Boolean, default=False, nullable=True)
+    paymentId = db.Column(db.String(), nullable=True)
+    startDate = db.Column(db.String(), nullable=True)
+    event = db.Column(db.String(), nullable=True)
+    
+    def __repr__(self): 
+        return f"Customer('{self.name}', 'Paid: {self.paid}', )"
+
+
+class Transactions(db.Model):
+    tablename = ['Transactions']
+
+    id = db.Column(db.Integer, primary_key=True)
+    candidate = db.Column(db.String, nullable=False)
+    candidateName = db.Column(db.String)
+    award = db.Column(db.String)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    amount = db.Column(db.String)
+    account = db.Column(db.String)
+    ref = db.Column(db.String)
+    paid = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f"Transaction(': {self.id}', 'Amount:{self.amount}', 'Candidate:{self.candidate}', 'Paid:{self.paid}')"
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -414,9 +461,134 @@ def sendtelegram(params):
     print(content)
     return content
 
+
+@app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
+def makePayment(account, amount, candidateId, network):
+    print(account, str(amount), candidateId, str(network))
+
+    # PaymentThingyDontFuckingTouch!
+    username = "Pr3t0_gen"
+    apiKey = ",)gnxTU_"
+    key = str(random.randint(1000,9999))
+    hashedApiKey = hashlib.md5(apiKey.encode())
+    strHashedApiKey = str(hashedApiKey.hexdigest())
+    userCredentials = username + key + strHashedApiKey
+    print(type(userCredentials))
+    usercred = hashlib.md5(userCredentials.encode())
+    vodePayment = False
+    # Okay,THankFuckingYou❤️!
+
+
+    # try:
+    newTransaction = Transactions(candidate = candidateId, account=account, award="tca", amount = float(amount))
+    db.session.add(newTransaction)
+    db.session.commit()
+    print(newTransaction)
+    sendtelegram("New transaction created:" + str(newTransaction.id) + " awaiting payment of "+ str(newTransaction.amount)+"and refernece.")
+# except:
+    # votingAlert("Create transaction was unsuccessful")
+
+    if test == True:
+        amount = 0.01
+
+    if network == 'OT':
+        payBy = 'VODAFONE'
+        vodePayment = 'TRUE'
+
+    elif network == 'VODAFONE':
+        payBy = 'VODAFONE'
+        vodePayment = 'TRUE'
+
+    elif network == 'TIGO':
+        payBy = 'AIRTELTIGO'
+    
+    elif network == 'AIRTEL':
+        payBy = 'AIRTELTIGO'
+
+    elif network == 'AIRTELTIGO':
+        payBy = 'AIRTELTIGO'
+
+    elif network == 'MTN':
+        payBy = 'MTN'
+    
+    elif network == 'MTNGH' :
+        payBy = 'MTN'
+
+    else:
+        print(str(network) + " Is not registered in switch statemenet")
+
+
+    phoneNumber = "233"+ str(account[-9:])
+    print(phoneNumber)
+
+
+    print('WEBHOOK_VERIFIED')
+    print(payBy)
+    # stagingCallBack = "https://tca-staging.herokuapp.com/ussdconfirm/"+str(newTransaction.id)
+    liveCallBack = "http://prestoussd.herokuapp.com/ussdconfirm/"+str(newTransaction.id)
+    print(liveCallBack)
+    endpoint = "http://api.nalosolutions.com/payplus/api/"
+
+    # if vodePayment == True:
+    data ={ 
+        "merchant_id": "NPS_000153",
+        "secrete": usercred.hexdigest(), 
+        "key": key, 
+        "order_id": str(candidateId)+"-"+str(newTransaction.amount)+"TCA-PRS",
+        "customerName": candidateId+"tca", 
+        "amount": str(amount), 
+        "item_desc": "award: TCA - :"+candidateId , 
+        "customerNumber": str(phoneNumber), 
+        "isussd":1,
+        "newVodaPayment": vodePayment,
+        "payby":payBy, 
+        "callback": liveCallBack
+        }
+    
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    json_object = json.dumps(data) 
+    print(data)
+
+    r = requests.post(endpoint, data=json_object, headers=headers, proxies=proxies)
+    print(r.content)
+    content = r.content
+
+    content = json.loads(content)
+
+
+    invoiceNo = content['InvoiceNo']
+    newTransaction.ref = str(invoiceNo)
+    db.session.commit()
+    
+    print(r.status_code)
+    print(r.headers)
+    return r.content
+     
+
 @app.route('/test', methods=['POST','GET'])
 def test():
     return render_template('asdf.html')
+
+
+def checkForSession(sessionId):
+ # Search db for a session with that Id
+    session = Customer.query.filter_by(sessionId = sessionId).first()
+    # If there is none, create one
+    if session == None :
+        print("Session " + sessionId + " is not in the database.")
+        #  create session!
+        # print("sessionId " + getSession.sessionId + " has been found")
+        newSession = Customer(sessionId = sessionId)
+        db.session.add(newSession)
+        db.session.commit()
+        print(sessionId + " session has been created")
+        session = newSession
+    print(session)
+    return session
+
 
 
 
@@ -432,47 +604,118 @@ def naloussd():
     data = request.json['USERDATA']
     print(data)
 
-    if len(data) == 8:
-        print("data")
-        print(data)
-        # make the request for the account. 
-        response = {
-            "USERID": "prestoGh",
-            "MSISDN":msisdn,
-            "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event.",
-            "MSGTYPE":True
-        }
-        resp = make_response(response) 
-        return resp
+    customer = checkForSession(sessionId)
+    if customer:
+        print(customer)
+        # TODO : Fill the fields for repr for customer.
+        # If a customer has an event.
+        if customer.event == None:
+            customer.event = "Presto Maiden Event"
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Hello, Welcome to PrestoVotes. Which ticket type would you like to buy for our Maiden Event. /n 1.Regular - Ghc 0.01",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        if customer.typeOfTickets == None:
+            if data == 1:
+                customer.typeOfTickets = "Regular"
+                db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTickets + " tickets would you like to buy",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+
+        elif customer.numberOfTickets == None:
+            customer.numberOfTickets = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Please enter your name.",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        elif customer.name == None:
+            customer.name = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSGTYPE":False
+            }
+            makePayment(msisdn, customer.numberOfTickets, customer.name, mobileNetwork)
+            return resp
+
+        else:
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Oops, if you are seeing this, then Nana Kweku Really FuckUp on this USSD",
+                "MSGTYPE":False
+            }
+
+            
+        # Type Of Ticket
+        # Number Of Tickets
+        # Name
+        # PhoneNumber
+        # PaymentId
+
+   
+    # if len(data) == 8:
+    #     print("data")
+    #     print(data)
+    #     # make the request for the account. 
+    #     response = {
+    #         "USERID": "prestoGh",
+    #         "MSISDN":msisdn,
+    #         "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event.",
+    #         "MSGTYPE":True
+    #     }
+    #     resp = make_response(response) 
+    #     return resp
          
-        #  make payement
-    elif len(data) < 8:
-        print("data")
-        print(data)
-        response = {
-                "USERID": "prestoGh",
-                "MSISDN":msisdn,
-                "MSG":"Please enter a name to assign the " + data + " tickets to.",
-                "MSGTYPE":True
-            }
-        resp = make_response(response) 
-        return resp
+    #     #  make payement
+    # elif len(data) < 8:
+    #     print("data")
+    #     print(data)
+    #     response = {
+    #             "USERID": "prestoGh",
+    #             "MSISDN":msisdn,
+    #             "MSG":"Please enter a name to assign the " + data + " tickets to.",
+    #             "MSGTYPE":True
+    #         }
+    #     resp = make_response(response) 
+    #     return resp
 
-    elif len(data) > 8: 
-        print("Has an extension")
-        extension = data.split("*")
-        print(extension)
-        print(extension[3])
-        extension = extension[3]
+    # elif len(data) > 8: 
+    #     print("Has an extension")
+    #     extension = data.split("*")
+    #     print(extension)
+    #     print(extension[3])
+    #     extension = extension[3]
 
-        response = {
-                "USERID": "prestoGh",
-                "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event. \n Each tickets costs 1 cedi.",
-                "MSGTYPE":True
-            }
-        resp = make_response(response) 
-        return resp
+    #     response = {
+    #             "USERID": "prestoGh",
+    #             "MSISDN":msisdn,
+    #             "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event. \n Each tickets costs 1 cedi.",
+    #             "MSGTYPE":True
+    #         }
+    #     resp = make_response(response) 
+    #     return resp
 
 # @app.route('/myitems')
 # def myitems():
