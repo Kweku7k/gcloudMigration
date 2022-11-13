@@ -1,28 +1,22 @@
-from email.policy import default
-import secrets
 import hashlib
-import random
-import os
-import urllib.request, urllib.parse
-import urllib
-from flask import Flask, render_template, redirect, flash, url_for, request, session, make_response
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import UserMixin, login_user, current_user, logout_user
-from flask_login import LoginManager
-from PIL import Image
-from flask_migrate import Migrate
-from datetime import datetime
 import json
+import os
+import random
+import secrets
+import urllib
+import urllib.parse
+import urllib.request
+from datetime import datetime
+from email.policy import default
 import requests
+from flask import Flask, flash, make_response, redirect, render_template,request, session, url_for
+from flask_login import LoginManager, UserMixin, current_user, login_user,logout_user
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from PIL import Image
+
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI']='postgres://jziidvhglkmwop:847579f0fc359140a5a832725e61db1c3754eb6523c12849558fbfd1bfa8a2cf@ec2-34-236-94-53.compute-1.amazonaws.com:5432/d11sblr8akns3e'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
-# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://hgikcuqfytwhhw:0665b5b321fccc2dbed4070c7c9451877b061d4fa9e3fc32b42220016d276222@ec2-44-195-132-31.compute-1.amazonaws.com:5432/d61i5rsnofs2q2'
-
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@eligibility.central.edu.gh:5432/talanku'
-
-
-# app.config['SQLALCHEMY_DATABASE_URI']='postgres://mdbmveudctmurf:a15c90f420dc141c4190c0572ec9af402b5acb13113a72578fab7d57e49aa4ac@ec2-52-205-3-3.compute-1.amazonaws.com:5432/ddn4isnkf5f11b'
 app.config['SECRET_KEY'] = '5791628b21sb13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
