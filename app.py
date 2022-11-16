@@ -709,7 +709,7 @@ def checkForSession(sessionId):
     return session
 
 
-@app.route('/ticketPoll', methods=['GET', 'POST'])
+@app.route('/naloussd', methods=['GET', 'POST'])
 def ticketPoll():
     print(request.json)
     sessionId = request.json['SESSIONID']
@@ -732,7 +732,7 @@ def ticketPoll():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for /n A Night Under The Stars /n powered by talanku.com",
+                "MSG":"Welcome to the poll for A Night Under The Stars powered by talanku.com. Press 1 to continue",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -781,7 +781,7 @@ def ticketPoll():
 
 
 
-@app.route('/naloussd', methods=['GET', 'POST'])
+# @app.route('/naloussd', methods=['GET', 'POST'])
 def naloussd():
     print(request.json)
     sessionId = request.json['SESSIONID']
@@ -804,7 +804,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for " + "\n" + "A Night Under The Stars \n powered by talanku.com",
+                "MSG":"Welcome to the poll for A Night Under The Stars. Press 1 to continue. \n powered by talanku.com",
                 "MSGTYPE":True
             }
             resp = make_response(response)
