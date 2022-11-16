@@ -85,7 +85,7 @@ class Poll(db.Model):
     event = db.Column(db.String(), nullable=True)
     
     def __repr__(self): 
-        return f"Customer('{self.name}', 'Paid: {self.paid}', )"
+        return f"Movie('{self.movie}', 'Probability: {self.probability}',  )"
 
 class Transactions(db.Model):
     tablename = ['Transactions']
