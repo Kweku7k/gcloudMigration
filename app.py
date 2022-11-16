@@ -748,7 +748,7 @@ def ticketPoll():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for A Night Under The Stars powered by talanku.com. Press 1 to continue",
+                "MSG":"Welcome to the poll for A Night Under The Stars powered by talanku.com. \n Press 1 to continue",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -760,7 +760,7 @@ def ticketPoll():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Which of these movies would you like to see /n 1. Black Panther  /n 2. Cruella /n 3. This Lady Called Life /n 4. Black Widow /n 5. Fatherhood ",
+                "MSG":"Which of these movies would you like to see \n 1. Black Panther  \n 2. Cruella \n 3. This Lady Called Life \n 4. Black Widow \n 5. Fatherhood ",
                 "MSGTYPE":True
             }
             resp = make_response(response)
