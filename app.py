@@ -799,12 +799,12 @@ def naloussd():
         # TODO : Fill the fields for repr for customer.
         # If a customer has an event.
         if customer.event == None:
-            customer.event = "Welcome to the poll for  A Night Under The Stars /n powered by talanku.com"
+            customer.event = "Welcome to the poll for A Night Under The Stars powered by talanku.com \n "
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for " + "\n" + "A Night Under The Stars \n powered by talanku.com",
+                "MSG":"Welcome to the poll for " + "\n" + "A Night Under The Stars \n powered by talanku.com /n  Which of these movies would you like to see /n 1. Black Panther  /n 2. Cruella /n 3. This Lady Called Life /n 4. Black Widow /n 5. Fatherhood ",
                 "MSGTYPE":True
             }
             resp = make_response(response)
