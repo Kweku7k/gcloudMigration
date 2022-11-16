@@ -804,7 +804,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for /n A Night Under The Stars /n powered by talanku.com",
+                "MSG":"Welcome to the poll for " + "\n" + "A Night Under The Stars \n powered by talanku.com",
                 "MSGTYPE":True
             }
             resp = make_response(response)
