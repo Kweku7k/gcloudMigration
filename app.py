@@ -709,6 +709,76 @@ def checkForSession(sessionId):
     return session
 
 
+@app.route('/ticketPoll', methods=['GET', 'POST'])
+def ticketPoll():
+    print(request.json)
+    sessionId = request.json['SESSIONID']
+    # menu = request.json['USERDATA']
+    print(sessionId)
+    msisdn = request.json['MSISDN']
+    mobileNetwork = request.json['NETWORK']
+    extension = '148'
+    data = request.json['USERDATA']
+    print(data)
+
+    customer = checkForSession(sessionId)
+    if customer:
+        print(customer)
+        # TODO : Fill the fields for repr for customer.
+        # If a customer has an event.
+        if customer.event == None:
+            customer.event = "A Night Under The Stars"
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Welcome to the poll for /n A Night Under The Stars /n powered by talanku.com",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        elif customer.movie == None:
+            customer.movie = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Which of these movies would you like to see /n 1. Black Panther  /n 2. Cruella /n 3. This Lady Called Life /n 4. Black Widow /n 5. Fatherhood ",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        elif customer.name == None:
+            customer.name = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Hi "+ data +" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSGTYPE":False
+            }
+            makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
+            resp = make_response(response)
+            return resp
+        else:
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Oops, if you are seeing this, then Nana Kweku Really FuckUp on this USSD",
+                "MSGTYPE":False
+            }
+            resp = make_response(response)
+            return resp
+
+            
+        # Type Of Ticket
+        # Number Of Tickets
+        # Name
+        # PhoneNumber
+        # PaymentId
+
 
 
 @app.route('/naloussd', methods=['GET', 'POST'])
@@ -729,12 +799,12 @@ def naloussd():
         # TODO : Fill the fields for repr for customer.
         # If a customer has an event.
         if customer.event == None:
-            customer.event = "Presto Maiden Event"
+            customer.event = "Welcome to the poll for  A Night Under The Stars /n powered by talanku.com"
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. Which ticket type would you like to buy for our Maiden Event. /n 1.Regular - Ghc 0.01",
+                "MSG":"Welcome to the poll for /n A Night Under The Stars /n powered by talanku.com",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -795,51 +865,6 @@ def naloussd():
         # PhoneNumber
         # PaymentId
 
-   
-    # if len(data) == 8:
-    #     print("data")
-    #     print(data)
-    #     # make the request for the account. 
-    #     response = {
-    #         "USERID": "prestoGh",
-    #         "MSISDN":msisdn,
-    #         "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event.",
-    #         "MSGTYPE":True
-    #     }
-    #     resp = make_response(response) 
-    #     return resp
-         
-    #     #  make payement
-    # elif len(data) < 8:
-    #     print("data")
-    #     print(data)
-    #     response = {
-    #             "USERID": "prestoGh",
-    #             "MSISDN":msisdn,
-    #             "MSG":"Please enter a name to assign the " + data + " tickets to.",
-    #             "MSGTYPE":True
-    #         }
-    #     resp = make_response(response) 
-    #     return resp
-
-    # elif len(data) > 8: 
-    #     print("Has an extension")
-    #     extension = data.split("*")
-    #     print(extension)
-    #     print(extension[3])
-    #     extension = extension[3]
-
-    #     response = {
-    #             "USERID": "prestoGh",
-    #             "MSISDN":msisdn,
-    #             "MSG":"Hello, Welcome to PrestoVotes. How many tickets would you like to buy for our Maiden Event. \n Each tickets costs 1 cedi.",
-    #             "MSGTYPE":True
-    #         }
-    #     resp = make_response(response) 
-    #     return resp
-
-# @app.route('/myitems')
-# def myitems():
 
 @app.route('/reciept/<int:orderId>', methods=['POST','GET'])
 def reciept(orderId):
@@ -1034,6 +1059,7 @@ def orders():
     response = make_response(allOrders)
     # Return the response. Which is recieved by the client.
     return response
+
 
 @app.route('/neworder', methods=['GET', 'POST'])
 def neworder():
