@@ -778,18 +778,30 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.name == None:
-            poll.name = data
+        elif poll.talanku == None:
+            poll.talanku = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data +" you are attempting to buy. " +  poll.numberOfTickets + " " + poll.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + poll.numberOfTickets,
-                "MSGTYPE":False
+                "MSG":"Have you used talanku.com before? \n 1.Yes \n No",
+                "MSGTYPE":True
             }
-            makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
             resp = make_response(response)
             return resp
+
+        elif poll.talanku == None:
+            poll.talanku = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Have you used talanku.com before?",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
         else:
             response = {
                 "USERID": "prestoGh",
