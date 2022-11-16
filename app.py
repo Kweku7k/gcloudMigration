@@ -708,15 +708,15 @@ def ussdconfirm(id):
 
 
 
-def checkForSession(sessionId):
+def checkForPollSession(sessionId):
  # Search db for a session with that Id
-    session = Customer.query.filter_by(sessionId = sessionId).first()
+    session = Poll.query.filter_by(sessionId = sessionId).first()
     # If there is none, create one
     if session == None :
         print("Session " + sessionId + " is not in the database.")
         #  create session!
         # print("sessionId " + getSession.sessionId + " has been found")
-        newSession = Customer(sessionId = sessionId)
+        newSession = Poll(sessionId = sessionId)
         db.session.add(newSession)
         db.session.commit()
         print(sessionId + " session has been created")
@@ -737,13 +737,13 @@ def ticketPoll():
     data = request.json['USERDATA']
     print(data)
 
-    customer = checkForSession(sessionId)
-    if customer:
-        print(customer)
-        # TODO : Fill the fields for repr for customer.
-        # If a customer has an event.
-        if customer.event == None:
-            customer.event = "A Night Under The Stars"
+    poll = checkForPollSession(sessionId)
+    if poll:
+        print(poll)
+        # TODO : Fill the fields for repr for poll.
+        # If a poll has an event.
+        if poll.event == None:
+            poll.event = "A Night Under The Stars"
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
@@ -754,8 +754,8 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif customer.movie == None:
-            customer.movie = data
+        elif poll.movie == None:
+            poll.movie = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
@@ -766,25 +766,25 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif customer.movieConfirm == None:
-            customer.movieConfirm = data
+        elif poll.movieConfirm == None:
+            poll.movieConfirm = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Which of these movies would you like to see /n 1. Black Panther  /n 2. Cruella /n 3. This Lady Called Life /n 4. Black Widow /n 5. Fatherhood ",
+                "MSG":"You have selected to watch " + poll.movie + " Press 1 to confirm or 2 to change your mind.",
                 "MSGTYPE":True
             }
             resp = make_response(response)
             return resp
 
-        elif customer.name == None:
-            customer.name = data
+        elif poll.name == None:
+            poll.name = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data +" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSG":"Hi "+ data +" you are attempting to buy. " +  poll.numberOfTickets + " " + poll.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + poll.numberOfTickets,
                 "MSGTYPE":False
             }
             makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
