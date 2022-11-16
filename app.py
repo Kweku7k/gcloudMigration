@@ -71,6 +71,22 @@ class Customer(db.Model):
         return f"Customer('{self.name}', 'Paid: {self.paid}', )"
 
 
+    
+class Poll(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sessionId = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(), nullable=True)
+    phoneNumber = db.Column(db.String(), nullable=True)
+    movie = db.Column(db.String(), nullable = True)
+    movieConfirm =  db.Column (db.String(), nullable = True)
+    talanku = db.Column(db.Boolean, default=False, nullable=True)
+    probability = db.Column(db.String(), nullable=True)
+    startDate = db.Column(db.String(), nullable=True)
+    event = db.Column(db.String(), nullable=True)
+    
+    def __repr__(self): 
+        return f"Customer('{self.name}', 'Paid: {self.paid}', )"
+
 class Transactions(db.Model):
     tablename = ['Transactions']
 
@@ -740,6 +756,18 @@ def ticketPoll():
 
         elif customer.movie == None:
             customer.movie = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Which of these movies would you like to see /n 1. Black Panther  /n 2. Cruella /n 3. This Lady Called Life /n 4. Black Widow /n 5. Fatherhood ",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        elif customer.movieConfirm == None:
+            customer.movieConfirm = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
