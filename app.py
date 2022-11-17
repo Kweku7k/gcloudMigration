@@ -806,11 +806,13 @@ def ticketPoll():
             return resp
 
         elif poll.probability == None:
+            poll.probability = data
+            db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
                 "MSG":"Thank you for your input. Poll results will go live on Friday! \n Visit talanku.com for more information",
-                "MSGTYPE":True
+                "MSGTYPE":False
             }
             resp = make_response(response)
             return resp 
