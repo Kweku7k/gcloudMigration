@@ -804,8 +804,6 @@ def ticketPoll():
             return resp
 
         elif poll.probability == None:
-            poll.talanku = data
-            db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
