@@ -778,7 +778,7 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None and data == 1:
+        elif poll.talanku == None and data == "1":
             poll.talanku = True
             db.session.commit()
             response = {
@@ -790,7 +790,7 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None and data == 2:
+        elif poll.talanku == None and data == "2":
             poll.talanku = False
             poll.probability = 0
             db.session.commit()
