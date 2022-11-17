@@ -754,8 +754,8 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.movie == None:
-            poll.movie = data
+        elif poll.startDate == None:
+            poll.startDate = datetime.now()
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
@@ -766,41 +766,56 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.movieConfirm == None:
-            poll.movieConfirm = data
+        elif poll.movie == None:
+            poll.movie = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"You have selected to watch " + poll.movie + " Press 1 to confirm or 2 to change your mind.",
+                "MSG":"Have you used talanku.com before? \n 1.Yes \n 2.No",
                 "MSGTYPE":True
             }
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None:
+        elif poll.talanku == None and data == 1:
             poll.talanku = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Have you used talanku.com before? \n 1.Yes \n No",
+                "MSG":"On a scale of 1 to 10, how was the service?!",
                 "MSGTYPE":True
             }
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None:
+        elif poll.talanku == None and data == 2:
+            poll.talanku = data
+            poll.probability = "-"
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Thank you for your input. Poll results will go live on Friday! \n Visit talanku.com for more information",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+            return resp
+
+        elif poll.probability == None:
             poll.talanku = data
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Have you used talanku.com before?",
+                "MSG":"Thank you for your input. Poll results will go live on Friday! \n Visit talanku.com for more information",
                 "MSGTYPE":True
             }
             resp = make_response(response)
-            return resp
+            return resp 
+
+       
 
         else:
             response = {
