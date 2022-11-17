@@ -79,7 +79,8 @@ class Poll(db.Model):
     phoneNumber = db.Column(db.String(), nullable=True)
     movie = db.Column(db.String(), nullable = True)
     movieConfirm =  db.Column (db.String(), nullable = True)
-    talanku = db.Column(db.Boolean, default=False, nullable=True)
+    talanku = db.Column(db.Boolean, nullable=True)
+    tlk = db.Column(db.Boolean, nullable=True)
     probability = db.Column(db.String(), nullable=True)
     startDate = db.Column(db.String(), nullable=True)
     event = db.Column(db.String(), nullable=True)
@@ -724,7 +725,6 @@ def checkForPollSession(sessionId):
     print(session)
     return session
 
-
 @app.route('/naloussd', methods=['GET', 'POST'])
 def ticketPoll():
     print(request.json)
@@ -778,9 +778,10 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None and data == "1":
-            poll.talanku = True
+        elif poll.tlk == None and data == "1":
+            poll.tlk = True
             db.session.commit()
+            print("poll.tlk has bee set to True")
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
@@ -790,10 +791,11 @@ def ticketPoll():
             resp = make_response(response)
             return resp
 
-        elif poll.talanku == None and data == "2":
-            poll.talanku = False
+        elif poll.tlk == None and data == "2":
+            poll.tlk = False
             poll.probability = 0
             db.session.commit()
+            print("poll.tlk has bee set to True")
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
