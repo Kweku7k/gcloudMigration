@@ -779,7 +779,7 @@ def ticketPoll():
             return resp
 
         elif poll.talanku == None and data == 1:
-            poll.talanku = 1
+            poll.talanku = True
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
@@ -791,7 +791,7 @@ def ticketPoll():
             return resp
 
         elif poll.talanku == None and data == 2:
-            poll.talanku = 1
+            poll.talanku = False
             poll.probability = 0
             db.session.commit()
             response = {
