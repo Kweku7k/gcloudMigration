@@ -70,6 +70,19 @@ class Customer(db.Model):
     def __repr__(self): 
         return f"Customer('{self.name}', 'Paid: {self.paid}', )"
 
+    
+class Ticket(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sessionId = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(), nullable=True)
+    phoneNumber = db.Column(db.String(), nullable=True)
+    numberOfTickets = db.Column(db.String(), nullable = True)
+    ticketConfirm =  db.Column (db.String(), nullable = True)
+    paid = db.Column(db.Boolean, nullable=True)
+    
+    def __repr__(self): 
+        return f"Movie('{self.movie}', 'Probability: {self.probability}',  )"
+
 
     
 class Poll(db.Model):
@@ -725,7 +738,24 @@ def checkForPollSession(sessionId):
     print(session)
     return session
 
-@app.route('/naloussd', methods=['GET', 'POST'])
+
+def checkForTicketSession(sessionId):
+ # Search db for a session with that Id
+    session = Ticket.query.filter_by(sessionId = sessionId).first()
+    # If there is none, create one
+    if session == None :
+        print("Ticket session " + sessionId + " is not in the database.")
+        #  create session!
+        # print("sessionId " + getSession.sessionId + " has been found")
+        newSession = Ticket(sessionId = sessionId)
+        db.session.add(newSession)
+        db.session.commit()
+        print(sessionId + " session has been created")
+        session = newSession
+    print(session)
+    return session
+
+# @app.route('/naloussd', methods=['GET', 'POST'])
 def ticketPoll():
     print(request.json)
     sessionId = request.json['SESSIONID']
@@ -802,6 +832,9 @@ def ticketPoll():
                 "MSG":"Thank you for your input. Poll results will go live on Friday! \n Visit talanku.com for more information",
                 "MSGTYPE":True
             }
+
+            sendtelegram("New Poll! \n Movie - " + poll.movie + " Have you heard of talanku before? - " + poll.tlk + "Service rating" + poll.probability )
+            
             resp = make_response(response)
             return resp
 
@@ -814,6 +847,7 @@ def ticketPoll():
                 "MSG":"Thank you for your input. Poll results will go live on Friday! \n Visit talanku.com for more information",
                 "MSGTYPE":False
             }
+            sendtelegram("New Poll! \n Movie - " + poll.movie + " Have you heard of talanku before? - " + poll.tlk + "Service rating" + poll.probability )
             resp = make_response(response)
             return resp 
 
@@ -838,7 +872,7 @@ def ticketPoll():
 
 
 
-# @app.route('/naloussd', methods=['GET', 'POST'])
+@app.route('/naloussd', methods=['GET', 'POST'])
 def naloussd():
     print(request.json)
     sessionId = request.json['SESSIONID']
@@ -849,6 +883,29 @@ def naloussd():
     extension = '148'
     data = request.json['USERDATA']
     print(data)
+
+    customer = checkForTicketSession(sessionId)
+    if customer:
+        if customer.event == None:
+            customer.event = "TouchDown"
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Welcome to the poll for A Night Under The Stars. Press 1 to continue. \n powered by talanku.com",
+                "MSGTYPE":True
+            }
+            resp = make_response(response)
+        return resp
+
+
+    # check extension!
+
+    # Welcome screen - 1 ticket costs 20 cedis
+    # How many tickets do you want to by
+    # Confirmation of number of tickets
+    # Trigger momo payment to this number?
+    # Done paying momo
 
     customer = checkForSession(sessionId)
     if customer:
