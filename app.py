@@ -638,12 +638,11 @@ def ussdconfirm(id):
         customer = Customer.query.get_or_404(transaction.candidate)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
-        
+    
 
         if transaction:
             if transaction.paid == False:
                 # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
-               
                 customer.paid = True
                 transaction.paid = True
                 # TODO newTicket!
@@ -765,13 +764,14 @@ def checkForTicketSession(sessionId, data):
         # need a mapping table here!
         event = findEvent(data)
         newSession = UssdSessions(sessionId = sessionId, event = event)
-        newCustomer = Ticket(sessionId = sessionId)
-        db.session.add(newSession, newCustomer)
+        newCustomer = Ticket(sessionId = sessionId,)
+        db.session.add(newSession)
+        db.session.add(newCustomer)
         db.session.commit()
         print(sessionId + " session has been created")
         session = newSession
     session = Ticket.query.filter_by(sessionId = sessionId).first()
-    print("Returning" + session.name + " session: " + session)
+    print("Returning session: " + session)
     return session
 
 # @app.route('/naloussd', methods=['GET', 'POST'])
@@ -963,8 +963,16 @@ def naloussd():
             }
             resp = make_response(response)
             return resp
-
-            
+    else:
+        response = {
+            "USERID": "prestoGh",
+            "MSISDN":msisdn,
+            "MSG":"There is no event with this code! Please check and try again ",
+            "MSGTYPE":False
+        }
+        resp = make_response(response)
+        return resp
+        
         # Type Of Ticket
         # Number Of Tickets
         # Name
