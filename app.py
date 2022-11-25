@@ -631,8 +631,6 @@ def ussdconfirm(id):
         print(request.json)
     except:
         print("Reading input as json failed!")
-        
-
 
     if test == True:
         print("THIS IS A TEST VALUE!!!!")
@@ -882,8 +880,6 @@ def ticketPoll():
             resp = make_response(response)
             return resp 
 
-       
-
         else:
             response = {
                 "USERID": "prestoGh",
@@ -917,7 +913,7 @@ def naloussd():
         # TODO : Fill the fields for repr for customer.
         # If a customer has an event.
         if customer.event == None:
-            customer.event = "Touchdown 01"
+            customer.event = "TouchBase0.1"
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
