@@ -921,7 +921,7 @@ def naloussd():
     # Trigger momo payment to this number?
     # Done paying momo
 
-    customer = checkForSession(sessionId)
+    # customer = checkForSession(sessionId)
     if customer:
         print(customer)
         # TODO : Fill the fields for repr for customer.
