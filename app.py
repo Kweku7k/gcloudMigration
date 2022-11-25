@@ -770,6 +770,7 @@ def checkForTicketSession(sessionId, data):
         db.session.commit()
         print(sessionId + " session has been created")
         session = newSession
+    session = Ticket.query.filter_by(sessionId = sessionId).first()
     print(session)
     return session
 
