@@ -90,7 +90,7 @@ class Ticket(db.Model):
     paid = db.Column(db.Boolean, nullable=True)
     
     def __repr__(self): 
-        return f"Movie('{self.movie}', 'Probability: {self.probability}',  )"
+        return f"Ticket('{self.id}', 'Paid: {self.paid}',  )"
     
 class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
