@@ -870,17 +870,13 @@ def ticketPoll():
         # PhoneNumber
         # PaymentId
 
-
-
 @app.route('/naloussd', methods=['GET', 'POST'])
 def naloussd():
     print(request.json)
     sessionId = request.json['SESSIONID']
-    # menu = request.json['USERDATA']
     print(sessionId)
     msisdn = request.json['MSISDN']
     mobileNetwork = request.json['NETWORK']
-    extension = '148'
     data = request.json['USERDATA']
     print(data)
 
