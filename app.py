@@ -906,11 +906,11 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for A Night Under The Stars. Press 1 to continue. \n powered by talanku.com",
+                "MSG":"Welcome to Touchdown 01!",
                 "MSGTYPE":True
             }
             resp = make_response(response)
-        return resp
+            return resp
 
 
     # check extension!
