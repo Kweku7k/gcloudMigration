@@ -62,7 +62,7 @@ class Customer(db.Model):
     name = db.Column(db.String(), nullable=True)
     phoneNumber = db.Column(db.String(), nullable=True)
     numberOfTickets = db.Column(db.String(), nullable = True)
-    typeOfTickets =  db.Column (db.String(), default='default.jpg')
+    typeOfTicket =  db.Column (db.String(), default='default.jpg')
     paid = db.Column(db.Boolean, default=False, nullable=True)
     paymentId = db.Column(db.String(), nullable=True)
     startDate = db.Column(db.String(), nullable=True)
@@ -85,8 +85,8 @@ class Ticket(db.Model):
     name = db.Column(db.String(), nullable=True)
     phoneNumber = db.Column(db.String(), nullable=True)
     numberOfTickets = db.Column(db.String(), nullable = True)
-    ticketConfirm =  db.Column (db.String(), nullable = True)
-    typeOfTicket =  db.Column (db.String(), nullable = True)
+    ticketConfirm =  db.Column(db.String(), nullable = True)
+    typeOfTickets =  db.Column(db.String(), nullable = True)
     event =  db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
@@ -917,14 +917,14 @@ def naloussd():
             resp = make_response(response)
             return resp
 
-        if customer.typeOfTickets == None:
+        if customer.typeOfTicket == None:
             if data == 1:
-                customer.typeOfTickets = "Regular"
+                customer.typeOfTicket = "Regular"
                 db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTickets + " tickets would you like to buy",
+                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTicket + " tickets would you like to buy",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -949,7 +949,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTicket + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
                 "MSGTYPE":False
             }
             makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
