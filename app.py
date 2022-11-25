@@ -950,28 +950,42 @@ def naloussd():
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
                 "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
-                "MSGTYPE":False
+                "MSGTYPE":True
             }
             resp = make_response(response)
             return resp
 
         elif customer.ticketConfirm == None:
-            customer.ticketConfirm = data
-            db.session.commit()
-            response = {
+            if data == "1": #Confirmed ticket purchase!
+                customer.ticketConfirm = data
+                db.session.commit()
+                response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
                 "MSG":"Hi "+ + " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
                 "MSGTYPE":False
-            }
-            makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
-            resp = make_response(response)
-            return resp
+                 }
+                makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
+                resp = make_response(response)
+                return resp
+
+            elif data == "2": #Go Back!
+                customer.numberOfTickets = None
+                db.session.commit()
+                response = {
+                    "USERID": "prestoGh",
+                    "MSISDN":msisdn,
+                    "MSG":" A regular ticket cost: 20cedis. \nHow many " + customer.typeOfTickets + " tickets would you like to buy",
+                    "MSGTYPE":False
+                }
+                makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
+                resp = make_response(response)
+                return resp
         else:
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Oops, if you are seeing this, then Nana Kweku Really FuckUp on this USSD",
+                "MSG":"There seems to have been a problem! Please try again after some time. \n Thanks for using PrestoTickets",
                 "MSGTYPE":False
             }
             resp = make_response(response)
