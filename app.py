@@ -50,11 +50,12 @@ class Event(db.Model):
     organiser = db.Column(db.String(), nullable=True)
     startDate = db.Column(db.String(), nullable=True)
     organiser = db.Column(db.String(), nullable=True)
+    code = db.Column(db.String(), nullable=True)
     
     def __repr__(self): 
-        return f"Item('{self.name}', '{self.category}', )"
+        return f"Event('{self.id}', '{self.name}', '{self.code}', )"
 
-    
+
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sessionId = db.Column(db.String(), nullable=False)
@@ -70,7 +71,14 @@ class Customer(db.Model):
     def __repr__(self): 
         return f"Customer('{self.name}', 'Paid: {self.paid}', )"
 
-    
+class UssdSessions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sessionId = db.Column(db.String(), nullable=False)
+    event = db.Column(db.String(), nullable=False)
+
+    def __repr__(self): 
+            return f"Session('{self.sessionId}', 'Event: {self.event}', )"
+
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sessionId = db.Column(db.String(), nullable=False)
@@ -78,12 +86,11 @@ class Ticket(db.Model):
     phoneNumber = db.Column(db.String(), nullable=True)
     numberOfTickets = db.Column(db.String(), nullable = True)
     ticketConfirm =  db.Column (db.String(), nullable = True)
+    event =  db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
     def __repr__(self): 
         return f"Movie('{self.movie}', 'Probability: {self.probability}',  )"
-
-
     
 class Poll(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -362,7 +369,8 @@ def home():
 
 @app.route('/testing')
 def testing():
-    return render_template('grid.html')
+    code =findEvent("*920*127*01")
+    return code
 
 @app.route('/delivery', methods=['POST','GET'])
 def delivery():
@@ -739,16 +747,26 @@ def checkForPollSession(sessionId):
     return session
 
 
-def checkForTicketSession(sessionId):
+def findEvent(data):
+    code = data.split("*")
+    code = code[-1]
+    print(code)
+    return code
+
+def checkForTicketSession(sessionId, data):
  # Search db for a session with that Id
-    session = Ticket.query.filter_by(sessionId = sessionId).first()
+    # session table
+    session = UssdSessions.query.filter_by(sessionId = sessionId).first()
     # If there is none, create one
     if session == None :
         print("Ticket session " + sessionId + " is not in the database.")
         #  create session!
         # print("sessionId " + getSession.sessionId + " has been found")
-        newSession = Ticket(sessionId = sessionId)
-        db.session.add(newSession)
+        # need a mapping table here!
+        event = findEvent(data)
+        newSession = UssdSessions(sessionId = sessionId, event = event)
+        newCustomer = Ticket(sessionId = sessionId)
+        db.session.add(newSession, newCustomer)
         db.session.commit()
         print(sessionId + " session has been created")
         session = newSession
