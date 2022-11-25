@@ -911,7 +911,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to" + customer.event + " ticketing platform! . \n Press 1 to continue. \n powered by prestoTickets",
+                "MSG":"Welcome to " + customer.event + " ticketing platform! . \n Press 1 to continue. \n powered by prestoTickets",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -946,10 +946,11 @@ def naloussd():
         elif customer.name == None:
             customer.name = data
             db.session.commit()
+            cost = customer.numberOfTickets + 20
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + int(customer.numberOfTickets) * 20 + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
+                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + cost + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
                 "MSGTYPE":True
             }
             resp = make_response(response)
