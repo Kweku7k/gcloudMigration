@@ -86,6 +86,7 @@ class Ticket(db.Model):
     phoneNumber = db.Column(db.String(), nullable=True)
     numberOfTickets = db.Column(db.String(), nullable = True)
     ticketConfirm =  db.Column (db.String(), nullable = True)
+    typeOfTicket =  db.Column (db.String(), nullable = True)
     event =  db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
