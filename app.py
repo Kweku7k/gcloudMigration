@@ -771,7 +771,7 @@ def checkForTicketSession(sessionId, data):
         print(sessionId + " session has been created")
         session = newSession
     session = Ticket.query.filter_by(sessionId = sessionId).first()
-    print("Returning session: " + session)
+    print("Returning session: " + session.sessionId)
     return session
 
 # @app.route('/naloussd', methods=['GET', 'POST'])
