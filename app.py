@@ -489,7 +489,7 @@ def additem():
     return render_template('additemcopy.html', form=form)
 
 def sendtelegram(params):
-    url = "https://api.telegram.org/bot5367664024:AAEpnGU1Fa0qh0SCSB_TlJgmSfU2DdTz9bA/sendMessage?chat_id=-603441321&text=" + urllib.parse.quote(params)
+    url = "https://api.telegram.org/bot5895529081:AAELHOlFWSMbjZ__W_3Jt8FB588yz_3x3ms/sendMessage?chat_id=-1001897491577&text=" + urllib.parse.quote(params)
     content = urllib.request.urlopen(url).read()
     print(content)
     return content
