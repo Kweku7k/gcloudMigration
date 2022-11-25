@@ -911,7 +911,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to" + customer.event+ " . \n Press 1 to continue. \n powered by talanku.com",
+                "MSG":"Welcome to" + customer.event + " ticketing platform! . \n Press 1 to continue. \n powered by prestoTickets",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -924,7 +924,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTickets + " tickets would you like to buy",
+                "MSG":" A regular ticket cost: 20cedis. \nHow many " + customer.typeOfTickets + " tickets would you like to buy",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -949,7 +949,19 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
+                "MSGTYPE":False
+            }
+            resp = make_response(response)
+            return resp
+
+        elif customer.ticketConfirm == None:
+            customer.ticketConfirm = data
+            db.session.commit()
+            response = {
+                "USERID": "prestoGh",
+                "MSISDN":msisdn,
+                "MSG":"Hi "+ + " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
                 "MSGTYPE":False
             }
             makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
