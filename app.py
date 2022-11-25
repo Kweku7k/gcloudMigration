@@ -901,29 +901,6 @@ def naloussd():
 
     customer = checkForTicketSession(sessionId, data)
     if customer:
-        if customer.event == None:
-            customer.event = "TouchDown"
-            db.session.commit()
-            response = {
-                "USERID": "prestoGh",
-                "MSISDN":msisdn,
-                "MSG":"Welcome to Touchdown 01!",
-                "MSGTYPE":True
-            }
-            resp = make_response(response)
-            return resp
-
-
-    # check extension!
-
-    # Welcome screen - 1 ticket costs 20 cedis
-    # How many tickets do you want to by
-    # Confirmation of number of tickets
-    # Trigger momo payment to this number?
-    # Done paying momo
-
-    # customer = checkForSession(sessionId)
-    if customer:
         print(customer)
         # TODO : Fill the fields for repr for customer.
         # If a customer has an event.
