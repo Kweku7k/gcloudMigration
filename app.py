@@ -764,7 +764,7 @@ def checkForTicketSession(sessionId, data):
         # need a mapping table here!
         event = findEvent(data)
         newSession = UssdSessions(sessionId = sessionId, event = event)
-        newCustomer = Ticket(sessionId = sessionId,)
+        newCustomer = Ticket(sessionId = sessionId, )
         db.session.add(newSession)
         db.session.add(newCustomer)
         db.session.commit()
@@ -905,12 +905,12 @@ def naloussd():
         # TODO : Fill the fields for repr for customer.
         # If a customer has an event.
         if customer.event == None:
-            customer.event = "Welcome to the poll for A Night Under The Stars powered by talanku.com \n "
+            customer.event = "Touchdown 01"
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to the poll for A Night Under The Stars. Press 1 to continue. \n powered by talanku.com",
+                "MSG":"Welcome to" + customer.event+ " . Press 1 to continue. \n powered by talanku.com",
                 "MSGTYPE":True
             }
             resp = make_response(response)
