@@ -911,14 +911,14 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Welcome to" + customer.event+ " . Press 1 to continue. \n powered by talanku.com",
+                "MSG":"Welcome to" + customer.event+ " . \n Press 1 to continue. \n powered by talanku.com",
                 "MSGTYPE":True
             }
             resp = make_response(response)
             return resp
 
         if customer.typeOfTickets == None:
-            if data == 1:
+            if data == "1":
                 customer.typeOfTickets = "Regular"
                 db.session.commit()
             response = {
