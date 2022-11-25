@@ -898,7 +898,7 @@ def naloussd():
     data = request.json['USERDATA']
     print(data)
 
-    customer = checkForTicketSession(sessionId)
+    customer = checkForTicketSession(sessionId, data)
     if customer:
         if customer.event == None:
             customer.event = "TouchDown"
