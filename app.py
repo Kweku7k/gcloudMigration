@@ -917,14 +917,14 @@ def naloussd():
             resp = make_response(response)
             return resp
 
-        if customer.typeOfTicket == None:
+        if customer.typeOfTickets == None:
             if data == 1:
-                customer.typeOfTicket = "Regular"
+                customer.typeOfTickets = "Regular"
                 db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTicket + " tickets would you like to buy",
+                "MSG":"Hello, Welcome to PrestoVotes. How many " + customer.typeOfTickets + " tickets would you like to buy",
                 "MSGTYPE":True
             }
             resp = make_response(response)
@@ -949,7 +949,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTicket + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
+                "MSG":"Hi "+ data+" you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " tickets. \n Please wait while we trigger payment for " + customer.numberOfTickets,
                 "MSGTYPE":False
             }
             makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
