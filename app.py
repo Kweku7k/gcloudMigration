@@ -518,7 +518,7 @@ def makePayment(account, amount, customerId, network):
     db.session.add(newTransaction)
     db.session.commit()
     print(newTransaction)
-    sendtelegram("New transaction created:" + str(newTransaction.id) + " awaiting payment of "+ str(newTransaction.amount)+"and refernece.")
+    sendtelegram("New transaction created:" + str(newTransaction.id) + " awaiting payment of "+ str(newTransaction.amount)+ " and refernece.")
 # except:
     # votingAlert("Create transaction was unsuccessful")
 
@@ -614,14 +614,25 @@ def ussdconfirm(id):
     json_content = {}
     response = make_response({"Response": "OK"})
     response.headers = {'Content-Type': 'application/json'}
+
     try:
-            print(request.form)
-            content = request.form  # ImmutableMultiDict(text, "")
-            text = list(content.keys())[0]  # '{"Source":{"ReportTime":"2022-...
-            json_content = json.loads(text)
-            print(json_content)
+        print(request.form)
+        content = request.form  # ImmutableMultiDict(text, "")
+        text = list(content.keys())[0]  # '{"Source":{"ReportTime":"2022-...
+        json_content = json.loads(text)
+        print(json_content)
     except:
-        print("request.form - didnt work")
+        print("Reading input as Immutable Dictionay Failed!")
+        # print("request.form - didnt work")
+
+    try:
+        print("Reading input at json")
+        json_content = request.json
+        print(request.json)
+    except:
+        print("Reading input as json failed!")
+        
+
 
     if test == True:
         print("THIS IS A TEST VALUE!!!!")
