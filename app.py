@@ -16,7 +16,7 @@ from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://wyecuxdxvijnzx:34af7f053af06caba738b262524b7d496e90ee68e6a6b942621feb3ea34e0e38@ec2-44-195-162-77.compute-1.amazonaws.com:5432/dfudur94ja35mo'
 app.config['SECRET_KEY'] = '5791628b21sb13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -627,7 +627,7 @@ def test():
 
 @app.route('/ussdconfirm/<string:id>', methods=['GET', 'POST'])
 def ussdconfirm(id):
-    test = True
+    test = False
     print(request)
     json_content = {}
     response = make_response({"Response": "OK"})
@@ -661,7 +661,7 @@ def ussdconfirm(id):
         transactionId = json_content["InvoiceNo"]
         
     if status == 'PAID':
-        transaction = Transactions.query.filter_by(ref = transactionId).first()
+        transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
         customer = Customer.query.get_or_404(transaction.candidate)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
