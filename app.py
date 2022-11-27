@@ -515,7 +515,7 @@ def sendtelegram(params):
 
 @app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
 def makePayment(event, customerName, typeOfTicket, account, amount, customerId, network,):
-    test = False
+    test = True
     print(account, str(amount), customerId, str(network))
 
     # PaymentThingyDontFuckingTouch!
