@@ -1003,8 +1003,8 @@ def naloussd():
                 customerId = str(customer.id) + "tbs1"
                 cost = customer.cost
                 ticketCode=get_random_string(10)
-                customer.code = customer.id
-                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, ticketCode)
+                customer.code = ticketCode
+                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, customer.id)
                 resp = make_response(response)
                 return resp
 
