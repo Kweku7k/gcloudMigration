@@ -678,7 +678,7 @@ def ussdconfirm(id):
         # print(transaction)
 
         if transaction:
-            if transaction.paid == True:
+            if transaction.paid == False:
                 # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
                 ticket.paid = True
                 transaction.paid = True
