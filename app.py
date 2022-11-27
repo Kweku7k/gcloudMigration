@@ -140,7 +140,7 @@ class TicketTransaction(db.Model):
     paid = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
-        return f"TicketTransaction(': {self.id}', 'Amount:{self.amount}', 'Customer:{self.customerName}', 'Paid:{self.paid}')"
+        return f"TicketTransaction('{self.id}', 'Amount:{self.amount}', 'Customer:{self.customerName}', 'Paid:{self.paid}')"
 
 
 
