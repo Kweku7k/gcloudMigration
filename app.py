@@ -673,7 +673,7 @@ def ussdconfirm(id):
     if status == 'PAID':
         transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
-        ticket = Ticket.query.filter_by(transaction.code)
+        ticket = Ticket.query.filter_by(code = transaction.code).first()
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
 
