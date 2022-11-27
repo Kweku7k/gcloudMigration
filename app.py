@@ -88,6 +88,7 @@ class Ticket(db.Model):
     ticketConfirm =  db.Column(db.String(), nullable = True)
     typeOfTickets =  db.Column(db.String(), nullable = True)
     event =  db.Column (db.String(), nullable = True)
+    code =  db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
     def __repr__(self): 
@@ -663,15 +664,14 @@ def ussdconfirm(id):
     if status == 'PAID':
         transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
-        customer = Customer.query.get_or_404(transaction.candidate)
+        ticket = Ticket.query.get_or_404(transaction.candidate)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
-    
 
         if transaction:
             if transaction.paid == False:
                 # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
-                customer.paid = True
+                ticket.paid = True
                 transaction.paid = True
                 # TODO newTicket!
                 # db.session.add(newVote)
