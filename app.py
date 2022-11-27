@@ -683,7 +683,7 @@ def ussdconfirm(id):
                 transaction.paid = True
                 phoneNumber = "0"+ str(transaction.account[-9:])
                 print(phoneNumber)
-                sendtelegram("Ticket " + str(ticket.code) + " has been paid for by " + ticket.name + " : " + str(ticket.phoneNumber) + "\n" )
+                sendtelegram("Ticket " + str(ticket.code) + " has been paid for by " + ticket.name + " : " + str(phoneNumber) + "\n" )
                 send_sms(phoneNumber, "Hello " + str(ticket.name) + "\n" + "You have succesfully purchased " + str(ticket.numberOfTickets) + " regular ticket(s) for " + str(ticket.event) + " Your ticket code is:" +ticket.code, "PrestoSl")
                 print(" --------------------------------------------------------------------- ")
             else:
