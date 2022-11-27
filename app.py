@@ -993,7 +993,7 @@ def naloussd():
                  }
                 customerId = str(customer.id) + "tbs1"
                 cost = int(customer.numberOfTickets) * 20
-                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customer.numberOfTickets, customerId, mobileNetwork)
+                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork)
                 resp = make_response(response)
                 return resp
 
