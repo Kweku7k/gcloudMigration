@@ -14,6 +14,8 @@ from flask_login import LoginManager, UserMixin, current_user, login_user,logout
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from PIL import Image
+import string
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://wyecuxdxvijnzx:34af7f053af06caba738b262524b7d496e90ee68e6a6b942621feb3ea34e0e38@ec2-44-195-162-77.compute-1.amazonaws.com:5432/dfudur94ja35mo'
@@ -89,6 +91,7 @@ class Ticket(db.Model):
     typeOfTickets =  db.Column(db.String(), nullable = True)
     event =  db.Column (db.String(), nullable = True)
     code =  db.Column (db.String(), nullable = True)
+    cost =  db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
     def __repr__(self): 
@@ -513,9 +516,8 @@ def sendtelegram(params):
     print(content)
     return content
 
-
 @app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
-def makePayment(event, customerName, typeOfTicket, account, amount, customerId, network,):
+def makePayment(event, customerName, typeOfTicket, account, amount, customerId, network, ticketCode):
     test = True
     print(account, str(amount), customerId, str(network))
 
@@ -537,7 +539,8 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
     db.session.add(newTransaction)
     db.session.commit()
     print(newTransaction)
-    sendtelegram("New transaction created:" + str(newTransaction.id) + " awaiting payment of "+ str(newTransaction.amount)+ " and refernece.")
+
+    # sendtelegram("New transaction created:" + str(newTransaction.id) + " awaiting payment of "+ str(newTransaction.amount)+ " and refernece." + str(newTransaction.code))
 # except:
     # votingAlert("Create transaction was unsuccessful")
 
@@ -570,10 +573,8 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
     else:
         print(str(network) + " Is not registered in switch statemenet")
 
-
     phoneNumber = "233"+ str(account[-9:])
     print(phoneNumber)
-
 
     print('WEBHOOK_VERIFIED')
     print(payBy)
@@ -611,9 +612,9 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 
     content = json.loads(content)
 
-
     invoiceNo = content['InvoiceNo']
     newTransaction.ref = str(invoiceNo)
+    newTransaction.code = str(ticketCode)
     db.session.commit()
 
     print(r.status_code)
@@ -624,6 +625,13 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 @app.route('/test', methods=['POST','GET'])
 def test():
     return render_template('asdf.html')
+
+def get_random_string(length):
+    # choose from all lowercase letter
+    letters = string.ascii_uppercase + string.digits
+    result_str = ''.join(random.choice(letters) for i in range(length))
+    print("Random string of length", length, "is:", result_str)
+    return result_str
 
 
 @app.route('/ussdconfirm/<string:id>', methods=['GET', 'POST'])
@@ -681,7 +689,7 @@ def ussdconfirm(id):
                 # votingChannel(transaction.amount + " votes have been bought for " + candidate.name + " from " + transaction.account)
                 # votingAlert("Vote id: " + newVote.id + " is successful " )
                 # votingAlert("Successfully updated " + candidate.name + " votes to " + str(candidate.votes) + "\n Vote Id: " + str(newVote.id))
-                send_sms(phoneNumber, "Hello " + str(customer.name) + "\n" + "You have succesfully purchased " + str(customer.numberOfTickets) + " ticket(s) for " + str(customer.event) + " Your ticket code is: PRSXA3258BVGFM", "PrestoSl")
+                send_sms(phoneNumber, "Hello " + str(ticket.name) + "\n" + "You have succesfully purchased " + str(ticket.numberOfTickets) + " regular ticket(s) for " + str(ticket.event) + " Your ticket code is:" +ticket.code, "PrestoSl")
                 print(" --------------------------------------------------------------------- ")
                 # except:
                     # votingAlert("Attempt to update " + str(transaction.amount) + " votes for "+ candidate.name +" was unsuccessful.")
@@ -970,8 +978,8 @@ def naloussd():
 
         elif customer.name == None:
             customer.name = data
+            customer.cost = int(customer.numberOfTickets) * 20
             db.session.commit()
-            cost = int(customer.numberOfTickets) * 20
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
@@ -992,8 +1000,10 @@ def naloussd():
                 "MSGTYPE":False
                  }
                 customerId = str(customer.id) + "tbs1"
-                cost = int(customer.numberOfTickets) * 20
-                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork)
+                cost = customer.cost
+                ticketCode=get_random_string(10)
+                customer.code = ticketCode
+                makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, ticketCode)
                 resp = make_response(response)
                 return resp
 
