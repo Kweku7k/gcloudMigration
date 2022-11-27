@@ -673,7 +673,7 @@ def ussdconfirm(id):
     if status == 'PAID':
         transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
-        ticket = Ticket.query.filter_by(code = transaction.code).first()
+        ticket = Ticket.query.get_or_404(transaction.code)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
 
@@ -1003,7 +1003,7 @@ def naloussd():
                 customerId = str(customer.id) + "tbs1"
                 cost = customer.cost
                 ticketCode=get_random_string(10)
-                customer.code = ticketCode
+                customer.code = customer.id
                 makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, ticketCode)
                 resp = make_response(response)
                 return resp
