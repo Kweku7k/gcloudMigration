@@ -991,7 +991,7 @@ def naloussd():
                 "MSG":"Please wait while we trigger a momo payment. Thank you for using PrestoTickets!",
                 "MSGTYPE":False
                  }
-                customerId = customer.id + "tbs1"
+                customerId = str(customer.id) + "tbs1"
                 cost = int(customer.numberOfTickets) * 20
                 makePayment(customer.event, customer.name, customer.typeOfTicket,msisdn, cost, customer.numberOfTickets, customerId, mobileNetwork)
                 resp = make_response(response)
