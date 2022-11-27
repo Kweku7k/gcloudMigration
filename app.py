@@ -126,6 +126,24 @@ class Transactions(db.Model):
         return f"Transaction(': {self.id}', 'Amount:{self.amount}', 'Candidate:{self.candidate}', 'Paid:{self.paid}')"
 
 
+class TicketTransaction(db.Model):
+    tablename = ['Transaction']
+
+    id = db.Column(db.Integer, primary_key=True)
+    event = db.Column(db.String, nullable=False)
+    customerName = db.Column(db.String)
+    typeOfTicket = db.Column(db.String)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    amount = db.Column(db.String)
+    account = db.Column(db.String)
+    ref = db.Column(db.String)
+    paid = db.Column(db.Boolean, default=False)
+    
+    def __repr__(self):
+        return f"TicketTransaction(': {self.id}', 'Amount:{self.amount}', 'Customer:{self.customerName}', 'Paid:{self.paid}')"
+
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -496,8 +514,8 @@ def sendtelegram(params):
 
 
 @app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
-def makePayment(account, amount, customerId, network):
-    test = True
+def makePayment(event, customerName, typeOfTicket, account, amount, customerId, network,):
+    test = False
     print(account, str(amount), customerId, str(network))
 
     # PaymentThingyDontFuckingTouch!
@@ -514,7 +532,7 @@ def makePayment(account, amount, customerId, network):
 
     # TODO :change candidate to customer!
     # try:
-    newTransaction = Transactions(candidate = customerId, account=account, award="tca", amount = float(amount))
+    newTransaction = TicketTransaction(event=event, customerName=customerName,  typeOfTicket =typeOfTicket, account=account  )
     db.session.add(newTransaction)
     db.session.commit()
     print(newTransaction)
@@ -973,7 +991,8 @@ def naloussd():
                 "MSG":"Please wait while we trigger a momo payment. Thank you for using PrestoTickets!",
                 "MSGTYPE":False
                  }
-                makePayment(msisdn, customer.numberOfTickets, customer.id, mobileNetwork)
+                customerId = customer.id + "tbs1"
+                makePayment(customer.event, customer.name, customer.typeOfTicket,msisdn, customer.numberOfTickets, customerId, mobileNetwork)
                 resp = make_response(response)
                 return resp
 
