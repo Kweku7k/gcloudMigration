@@ -141,6 +141,7 @@ class TicketTransaction(db.Model):
     amount = db.Column(db.String)
     account = db.Column(db.String)
     ref = db.Column(db.String)
+    code = db.Column(db.String)
     paid = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
@@ -535,7 +536,7 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 
     # TODO :change candidate to customer!
     # try:
-    newTransaction = TicketTransaction(event=event, customerName=customerName,  typeOfTicket =typeOfTicket, account=account  )
+    newTransaction = TicketTransaction(event=event, customerName=customerName,  typeOfTicket =typeOfTicket, account=account, amount = amount)
     db.session.add(newTransaction)
     db.session.commit()
     print(newTransaction)
@@ -672,12 +673,12 @@ def ussdconfirm(id):
     if status == 'PAID':
         transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
-        ticket = Ticket.query.get_or_404(transaction.candidate)
+        ticket = Ticket.query.get_or_404(transaction.code)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
 
         if transaction:
-            if transaction.paid == False:
+            if transaction.paid == True:
                 # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
                 ticket.paid = True
                 transaction.paid = True
