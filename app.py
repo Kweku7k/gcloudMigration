@@ -87,11 +87,11 @@ class Ticket(db.Model):
     name = db.Column(db.String(), nullable=True)
     phoneNumber = db.Column(db.String(), nullable=True)
     numberOfTickets = db.Column(db.String(), nullable = True)
-    ticketConfirm =  db.Column(db.String(), nullable = True)
-    typeOfTickets =  db.Column(db.String(), nullable = True)
-    event =  db.Column (db.String(), nullable = True)
-    code =  db.Column (db.String(), nullable = True)
-    cost =  db.Column (db.String(), nullable = True)
+    ticketConfirm = db.Column(db.String(), nullable = True)
+    typeOfTickets = db.Column(db.String(), nullable = True)
+    event = db.Column (db.String(), nullable = True)
+    code = db.Column (db.String(), nullable = True)
+    cost = db.Column (db.String(), nullable = True)
     paid = db.Column(db.Boolean, nullable=True)
     
     def __repr__(self): 
@@ -673,7 +673,7 @@ def ussdconfirm(id):
     if status == 'PAID':
         transaction = TicketTransaction.query.filter_by(ref = transactionId).first()
         print(transaction)
-        ticket = Ticket.query.get_or_404(transaction.code)
+        ticket = Ticket.query.filter_by(transaction.code)
         # send_sms(" have" + str(transaction.ref) + " has been paid!")
         # print(transaction)
 
