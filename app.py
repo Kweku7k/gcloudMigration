@@ -679,21 +679,13 @@ def ussdconfirm(id):
 
         if transaction:
             if transaction.paid == False:
-                # votingAlert("USSD: New Vote for of "+ str(transaction.amount)+" for " + candidate.name)
                 ticket.paid = True
                 transaction.paid = True
-                # TODO newTicket!
-                # db.session.add(newVote)
-                # db.session.commit()
                 phoneNumber = "0"+ str(transaction.account[-9:])
                 print(phoneNumber)
-                # votingChannel(transaction.amount + " votes have been bought for " + candidate.name + " from " + transaction.account)
-                # votingAlert("Vote id: " + newVote.id + " is successful " )
-                # votingAlert("Successfully updated " + candidate.name + " votes to " + str(candidate.votes) + "\n Vote Id: " + str(newVote.id))
+                sendtelegram("Ticket " + ticket.code + " has been paid for by " + ticket.name + " : " + ticket.phoneNumber + "\n" )
                 send_sms(phoneNumber, "Hello " + str(ticket.name) + "\n" + "You have succesfully purchased " + str(ticket.numberOfTickets) + " regular ticket(s) for " + str(ticket.event) + " Your ticket code is:" +ticket.code, "PrestoSl")
                 print(" --------------------------------------------------------------------- ")
-                # except:
-                    # votingAlert("Attempt to update " + str(transaction.amount) + " votes for "+ candidate.name +" was unsuccessful.")
             else:
                 print("This transaction has already been recorded.")
         else:
@@ -964,7 +956,6 @@ def naloussd():
             resp = make_response(response)
             return resp
 
-
         elif customer.numberOfTickets == None:
             customer.numberOfTickets = data
             db.session.commit()
@@ -1004,6 +995,7 @@ def naloussd():
                 cost = customer.cost
                 ticketCode=get_random_string(10)
                 customer.code = ticketCode
+                sendtelegram("TicketCode: " + ticketCode + " is awaiting payment from " + customer.name + " : " + msisdn + " of " + customer.cost)
                 makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, customer.id)
                 resp = make_response(response)
                 return resp
