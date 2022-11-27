@@ -983,7 +983,7 @@ def naloussd():
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + str(cost) + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
+                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + str(customer.cost) + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
                 "MSGTYPE":True
             }
             resp = make_response(response)
