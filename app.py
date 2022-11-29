@@ -550,11 +550,11 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 
     if network == 'OT':
         payBy = 'VODAFONE'
-        vodePayment = True
+        vodePayment = 1
 
     elif network == 'VODAFONE':
         payBy = 'VODAFONE'
-        vodePayment = True
+        vodePayment = 1
 
     elif network == 'TIGO':
         payBy = 'AIRTELTIGO'
@@ -592,7 +592,7 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
         "order_id": str(customerId)+"-"+str(newTransaction.amount)+"TCA-PRS",
         "customerName": str(customerId)+"tca", 
         "amount": str(amount), 
-        "item_desc": "TickedFor - :"+str(customerId) , 
+        "item_desc": "TicketFor-"+str(customerId) , 
         "customerNumber": str(phoneNumber), 
         "isussd":1,
         "newVodaPayment": vodePayment,
@@ -976,7 +976,6 @@ def naloussd():
                 customer.cost = 0.20
             else:
                 customer.cost = int(customer.numberOfTickets) * 20
-
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
