@@ -916,6 +916,8 @@ def ticketPoll():
         # PhoneNumber
         # PaymentId
 
+
+costTest = True
 @app.route('/naloussd', methods=['GET', 'POST'])
 def naloussd():
     print(request.json)
@@ -970,12 +972,16 @@ def naloussd():
 
         elif customer.name == None:
             customer.name = data
-            customer.cost = int(customer.numberOfTickets) * 20
+            if costTest == True:
+                customer.cost = 0.20
+            else:
+                customer.cost = int(customer.numberOfTickets) * 20
+
             db.session.commit()
             response = {
                 "USERID": "prestoGh",
                 "MSISDN":msisdn,
-                "MSG":"Hi "+ data+ " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + str(customer.cost) + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
+                "MSG":"Hi "+ data + " you are attempting to buy. " +  customer.numberOfTickets + " " + customer.typeOfTickets + " ticket(s). For Ghc" + str(customer.cost) + "  \n Press 1 to confirm or 2 to cancel! " + customer.numberOfTickets,
                 "MSGTYPE":True
             }
             resp = make_response(response)
