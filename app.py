@@ -550,11 +550,11 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 
     if network == 'OT':
         payBy = 'VODAFONE'
-        vodePayment = 'TRUE'
+        vodePayment = True
 
     elif network == 'VODAFONE':
         payBy = 'VODAFONE'
-        vodePayment = 'TRUE'
+        vodePayment = True
 
     elif network == 'TIGO':
         payBy = 'AIRTELTIGO'
