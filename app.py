@@ -517,10 +517,30 @@ def sendtelegram(params):
     print(content)
     return content
 
-@app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
+def sendHoldTelegram(params):
+    url = "https://api.telegram.org/bot5697243522:AAEeALOhEg7MxRN7rVM1MXnUKWRVgm9eTyg/sendMessage?chat_id=-1001897491577&text=" + urllib.parse.quote(params)
+    content = urllib.request.urlopen(url).read()
+    print(content)
+    return content
+
+# @app.route('/makepayments/<string:account>/<string:amount>/<string:candidateId>/<string:network>', methods=['GET', 'POST'])
 def makePayment(event, customerName, typeOfTicket, account, amount, customerId, network, ticketCode):
-    test = True
+# def makePayment(account, amount, network, candidateId):
+    test = False
+    localTest = False
+
     print(account, str(amount), customerId, str(network))
+    # print(account, str(amount), candidateId, str(network))
+
+    if localTest == True:
+        event = "01"
+        customerName="server"
+        typeOfTicket="Regular"
+        account=account
+        customerId='38'
+        network=network
+        ticketCode="get_random_string[10]"
+        print(ticketCode)
 
     # PaymentThingyDontFuckingTouch!
     username = "Pr3t0_gen"
@@ -550,11 +570,11 @@ def makePayment(event, customerName, typeOfTicket, account, amount, customerId, 
 
     if network == 'OT':
         payBy = 'VODAFONE'
-        vodePayment = 1
+        vodePayment = True
 
     elif network == 'VODAFONE':
         payBy = 'VODAFONE'
-        vodePayment = 1
+        vodePayment = True
 
     elif network == 'TIGO':
         payBy = 'AIRTELTIGO'
@@ -917,7 +937,7 @@ def ticketPoll():
         # PaymentId
 
 
-costTest = True
+costTest = False
 @app.route('/naloussd', methods=['GET', 'POST'])
 def naloussd():
     print(request.json)
@@ -995,12 +1015,12 @@ def naloussd():
                 "MSISDN":msisdn,
                 "MSG":"Please wait while we trigger a momo payment. Thank you for using PrestoTickets!",
                 "MSGTYPE":False
-                 }
+                }
                 customerId = str(customer.id) + "tbs1"
                 cost = customer.cost
                 ticketCode=get_random_string(10)
                 customer.code = ticketCode
-                sendtelegram("TicketCode: " + ticketCode + " is awaiting payment from " + customer.name + " : " + msisdn + " of " + customer.cost)
+                sendHoldTelegram("TicketCode: " + ticketCode + " is awaiting payment from " + customer.name + " : " + msisdn + " of " + customer.cost)
                 makePayment(customer.event, customer.name, "Regular" ,msisdn, cost, customerId, mobileNetwork, customer.id)
                 resp = make_response(response)
                 return resp
